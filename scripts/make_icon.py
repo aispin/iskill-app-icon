@@ -293,16 +293,15 @@ def build_svg(glyph: str, base: str, glyph_color: str = "#FFFFFF",
 
     tile_el = '\n  <path d="%s" fill="url(#bg)"/>' % d if d is not None else ""
     label = title or ("%s icon" % glyph)
+    # 无底板（--tile none）时不输出空的 <defs></defs>
+    defs_block = ("\n  <defs>\n%s\n  </defs>" % "\n".join(defs)) if defs else ""
 
     return """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="%s">
-  <title>%s</title>
-  <defs>
-%s
-  </defs>%s
+  <title>%s</title>%s%s
   <g>%s
   </g>
 </svg>
-""" % (label, label, "\n".join(defs), tile_el, body)
+""" % (label, label, defs_block, tile_el, body)
 
 
 # ─────────────────────────────────────────────────────────────

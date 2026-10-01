@@ -16,6 +16,34 @@ bash scripts/make-all.sh --glyph whale --color '#10C8A1' --outdir public --name 
 产出：`favicon.svg` · `favicon-16/32/48.png` · `apple-touch-icon.png` · `icon-192/512.png` ·
 `maskable-512.png` · `site.webmanifest` ·（`--sheet` 时）多尺寸预览图，最后打印要贴进 `<head>` 的片段。
 
+## 样本
+
+下面是本技能**现场生成**的效果（源件在 `assets/samples/`，总览图在 `assets/`）。
+
+**六个内置图形**，默认 squircle 底板、各配一个主色。每张图右下角是它缩到 **32px / 16px** 的真实样子 ——
+缩到这个尺寸还认得出，才算合格：
+
+![内置图形样本](assets/sample-glyphs.png)
+
+**底板形状与配色玩法**。同一个图形只换 `--tile`，或只换一个主色：
+
+![底板与配色样本](assets/sample-tiles.png)
+
+想复现其中任意一张：
+
+```bash
+python3 scripts/make_icon.py --glyph whale --color '#10C8A1' --out whale.svg          # ≈ 第 1 张
+python3 scripts/make_icon.py --glyph bolt  --color '#7C5CFF' --tile circle --out c.svg # ≈ 圆形那张
+python3 scripts/make_icon.py --glyph leaf  --color '#0F172A' --glyph-color '#7CFFB2' --out d.svg # 深底亮图形
+```
+
+样本可一键重出（改了图形/配色算法后跑一次，文档里的图就跟着更新）：
+
+```bash
+bash scripts/make-samples.sh              # 重出 SVG 源件 + 两张总览图
+bash scripts/make-samples.sh --svg-only   # 只重出 SVG，不需要浏览器
+```
+
 ## 整体流程
 
 ```
@@ -121,7 +149,8 @@ python3 $S/scripts/render_png.py --svg favicon.svg --sheet --sheet-out icon-shee
 - 画在 **512×512** 画布上，主体落在安全区 `x/y ∈ [96, 416]`。
 - 用三次贝塞尔（`C`）画曲线；**长直边要加密取点**，否则样条会在两端鼓出去。
 - 转折处如果看着发尖/自交，多半是点距不均 —— 需要用向心参数化（`catmull_to_path()` 已内置）。
-- 加法：`GLYPHS` 里加完，`--glyph mycat` 立刻可用。
+- 加法：`GLYPHS` 里加完，`--glyph mycat` 立刻可用；再跑 `bash scripts/make-samples.sh`
+  就能把新图形加进上面的样本图，顺便验证它在 32px 下还认得出。
 
 ## 平台规范（本技能已按此实现）
 
