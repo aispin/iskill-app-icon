@@ -25,10 +25,47 @@ iOS / macOS 的图标圆角不是圆弧，而是**连续曲率**（曲率从直�
 得 `r ≈ 0.442a`。半边长 `a` = 226（512 画布、内缩 30）时 `r ≈ 100`，
 占全宽 452 的 **22.1%** —— 和 iOS 官方的 22.37% 基本一致。
 
-### 留白
+### 留白决定「看起来多大」
 
-- 512 画布下内缩 **30**（≈6%）。这是本技能的默认值。
-- 要"满幅"时用 `--tile rect --inset 0`（做 maskable / 需要底板铺满时）。
+512 画布下默认内缩 **30**（≈6%，图形占 **88.3%**）。但留白要**按用途选**——这个比例直接决定视觉尺寸。
+
+在浏览器标签（16px）里，88.3% 与 100% 的差别是 **14.1px vs 16px**，肉眼一眼可辨。
+**与文件体积、`viewBox` 数值都无关，只看图形外接框占画布的比例。**
+
+| 用途 | inset | 占比 | 说明 |
+|---|---|---|---|
+| 浏览器标签 favicon | **0 ~ 12** | 100% ~ 95% | GitHub / Google 同款观感 |
+| iOS 主屏 / macOS Dock | 满幅 | 100% | 系统自己加圆角遮罩，**必须满幅** |
+| 卡片 / 列表里的小徽标 | 30（默认） | 88.3% | 此时留呼吸感更好 |
+
+**GitHub 的 `favicon.svg` 就是 0 留白**：`viewBox="0 0 32 32"`，path 从 `M16 0` 一路画到 `16 32`，图形顶满四边。
+
+```bash
+# favicon 专用（满幅或近似满幅）
+python3 scripts/make_icon.py --glyph whale --color '#10C8A1' --inset 12 --out favicon.svg
+# maskable / 需要底板铺满
+python3 scripts/make_icon.py --glyph whale --color '#10C8A1' --tile rect --inset 0 --out maskable-src.svg
+```
+
+### `<head>` 里的 link 怎么写
+
+```html
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+```
+
+- 主用 **SVG**，PNG 作同族回落 —— 两者都写 `rel="icon"`。
+- **别写 `rel="alternate icon"`**：`alternate` 的语义是"同一资源的备用表示"，不是标准的 favicon 声明，
+  语义模糊、个别浏览器会忽略。直接写 `rel="icon"`。
+- `apple-touch-icon` 必须**不透明**（iOS 加圆角遮罩，透明会被填黑）。
+- `<meta name="theme-color">` 与底板主色保持一致。
+
+### `fluid-icon` 不用管
+
+`<link rel="fluid-icon" href="...">` 是 macOS **Fluid.app**（把网页转成独立桌面应用的工具）的私有约定，
+只给 Fluid 生成的应用在 Dock 里取图标用。**Chrome / Safari / Firefox / Edge 一律忽略它**。
+GitHub 至今保留纯属 2010 年代的历史遗留，新项目不必加。
 
 ### 把点列变成贝塞尔：**必须用向心参数化**
 
@@ -173,6 +210,7 @@ IoU 参考：外框 ≥ 0.995、图形 ≥ 0.98 就算高度一致。
 ## 六、自检清单
 
 - [ ] 16px 下还认得出是什么（出 `--sheet` 看）
+- [ ] **favicon 是满幅/近似满幅（`--inset 0~12`）**，用的是默认 30 就会在浏览器标签里显得比别家小
 - [ ] 底板四周留白一致，图形视觉重心在中心（不是几何中心也算，但要稳）
 - [ ] 镂空细节用的是底板色，不是纯白/纯黑
 - [ ] 渐变只有明暗，没有跨色相

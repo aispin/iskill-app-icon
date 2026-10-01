@@ -100,6 +100,7 @@ python3 $S/scripts/render_png.py --svg favicon.svg --sheet --sheet-out icon-shee
 | `bolt` | 闪电 | 性能 / 能源 / 加速 |
 | `orbit` | 轨道环 + 卫星点 | 网关 / 链路 / 同步 |
 | `hex` | 六边形环 | 抽象 / 科技 / 中台 |
+| `s` | 字母 S（单线圆头） | 首字母为 S 的项目名 |
 
 底板：`squircle`（默认，≈iOS 连续圆角）/ `circle` / `square` / `rect` / `none`（无底板，图形直接落在透明上）。
 
@@ -110,7 +111,7 @@ python3 $S/scripts/render_png.py --svg favicon.svg --sheet --sheet-out icon-shee
 | `--color` | 底板主色。**亮部与暗部会自动推导**，不用自己配三档 |
 | `--glyph-color` | 图形颜色，默认白 |
 | `--cutout` | 镂空细节色。默认自动取「该处底板的等效色」，所以眼睛/嘴读起来像**挖空** |
-| `--tile` / `--inset` | 底板形状与四周留白（默认 30/512，约 6%） |
+| `--tile` / `--inset` | 底板形状与四周留白（默认 30/512，约 6%）。**favicon 想「显大」用 0~12**，见 design-rules「留白决定看起来多大」 |
 | `--scale` | 图形缩放（绕中心），做 maskable 用 0.76 |
 | `--flat` | 底板改纯色，不要渐变 |
 | `--no-clip` | 图形不被底板裁切 |
