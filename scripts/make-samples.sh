@@ -16,7 +16,8 @@ ASSETS="$ROOT/assets"
 
 PY="${ISKILL_PYTHON:-python3}"
 command -v "$PY" >/dev/null 2>&1 || {
-  for c in /Users/lv/.workbuddy/binaries/python/versions/3.13.12/bin/python3 python3.13 python; do
+  # 兜底候选：用 $HOME 展开，**不要写死 /Users/<name>**（写死过一次，换台机器就废）
+  for c in "$HOME"/.workbuddy/binaries/python/versions/*/bin/python3 python3.13 python3 python; do
     command -v "$c" >/dev/null 2>&1 && { PY="$c"; break; }
   done
 }
@@ -55,11 +56,12 @@ if [ "$SVG_ONLY" = "1" ]; then
   exit 0
 fi
 
-CHROME="${CHROME:-$("$PY" -c "
-import sys; sys.path.insert(0, '$HERE')
+CHROME="${CHROME:-$(ISKILL_ICON_HERE="$HERE" "$PY" -c "
+import os, sys
+sys.path.insert(0, os.environ['ISKILL_ICON_HERE'])
 import render_png as R
 print(R.find_chrome() or '')
-" 2>/dev/null || true)}"
+" 2>/dev/null || true)}
 if [ -z "$CHROME" ]; then
   echo "找不到 Chromium 系浏览器，跳过总览图（SVG 已生成）。" >&2
   echo "可用 CHROME=/path/to/chrome 指定后重跑。" >&2
@@ -144,6 +146,8 @@ p.sub{margin:0 0 16px;font-size:11.5px;color:#94A3B8}
 HTML
 
 echo "== 渲染总览图 =="
+# 只用裸 --headless：**别加 --user-data-dir**（会让 Chrome 截完不退出、挂死），
+# 也别优先 --headless=new（部分 Chrome 上 GPU 进程直接 FATAL）。详见 render_png.py::shoot()。
 shoot() { # page out w h
   "$CHROME" --headless --disable-gpu --no-proxy-server --hide-scrollbars \
     --force-device-scale-factor=2 --window-size="$3,$4" \

@@ -6,7 +6,7 @@ window.PROMO = {
   repoLabel: "aispin/iskill-app-icon",
   license: "MIT",
 
-  platform: "macos",
+  platform: "mac-windows",
 
   lang: {
     /* ── 中文 ───────────────────────────────────────────────────────── */
@@ -65,7 +65,7 @@ window.PROMO = {
         title: "它能做什么",
         sub: "",
         items: [
-          { icon: "bolt", title: "一行出全套", desc: "<code>make-all.sh</code> 串起 SVG → PNG → manifest，并打印接入片段。" },
+          { icon: "bolt", title: "一行出全套", desc: "<code>make_all.py</code> 串起 SVG → PNG → manifest，并打印接入片段；三平台同一份代码。" },
           { icon: "grid", title: "6 图形 × 4 底板", desc: "<code>--glyph</code> 与 <code>--tile</code> 任意组合，先并排比选再定稿。" },
           { icon: "layers", title: "自动推导配色", desc: "只给一个主色，亮部/暗部/镂空色会自动重算，不用自己配三档。" },
           { icon: "shield", title: "maskable 规范", desc: "满幅底板 + 内容缩到 0.76 单独渲染，避免圆角外露接缝。" },
@@ -100,7 +100,7 @@ window.PROMO = {
         eyebrow: "问答",
         title: "常见问题",
         items: [
-          { q: "Windows / Linux 上能用吗？", a: "分两步看：生成 SVG 是纯标准库 Python，任何平台都能跑；渲染 PNG 需要本机 Chromium，而 render_png.py 的浏览器候选全是 macOS 的 /Applications/*.app 路径，Windows 上会报「没找到 Chromium 系浏览器」。替代方案：用 CHROME=/path/to/chrome.exe 指定 Windows 的 Chrome，或只出 SVG（只出 SVG 时不需要浏览器）。" },
+          { q: "Windows / Linux 上能用吗？", a: "能。生成 SVG 是纯标准库 Python，任何平台都能跑；渲染 PNG 需要本机 Chromium，浏览器候选已按平台探测（Windows 认 Program Files / %LOCALAPPDATA% 下的 chrome.exe 与 msedge.exe —— Edge 随系统预装，通常不用额外装；Linux 认 PATH 里的 google-chrome / chromium）。入口一份真源：macOS/Linux 跑 scripts/make-all.sh，Windows 跑 scripts\\make-all.ps1（或双击 make-all.cmd）。要手动指定浏览器就用 CHROME=/path/to/chrome。" },
           { q: "需要装 Pillow / cairosvg 吗？", a: "不需要。PNG 走无头浏览器渲染，脚本只用标准库：math / argparse / json / subprocess。" },
           { q: "想换图标主色怎么办？", a: "换 --color 即可，渐变与镂空色会跟着重算；想完全自己控色用 --theme 传入 {color, light, mid, dark, glyph_color}。" },
           { q: "能加自己的图形吗？", a: "能。往 scripts/make_icon.py 的 GLYPHS 字典加一段画在 512×512 画布上的 SVG，--glyph 加名字立刻可用。" },
@@ -168,7 +168,7 @@ window.PROMO = {
         title: "What it does",
         sub: "",
         items: [
-          { icon: "bolt", title: "Full set in one line", desc: "<code>make-all.sh</code> chains SVG → PNG → manifest and prints the snippet." },
+          { icon: "bolt", title: "Full set in one line", desc: "<code>make_all.py</code> chains SVG → PNG → manifest and prints the snippet — one codebase for all three platforms." },
           { icon: "grid", title: "6 glyphs × 4 tiles", desc: "Combine <code>--glyph</code> and <code>--tile</code> freely, compare variants side by side." },
           { icon: "layers", title: "Derived palette", desc: "Give one main color; light / mid / dark and the cutout color are computed for you." },
           { icon: "shield", title: "Maskable done right", desc: "Full-bleed tile with content at 0.76, no seam around the corners." },
@@ -203,7 +203,7 @@ window.PROMO = {
         eyebrow: "FAQ",
         title: "Frequently asked",
         items: [
-          { q: "Does it work on Windows / Linux?", a: "Two steps matter: generating the SVG is pure stdlib Python and runs anywhere; rendering the PNG needs local Chromium, and render_png.py's candidates are all macOS /Applications/*.app paths, so Windows reports “no Chromium browser found”. Workaround: set CHROME=/path/to/chrome.exe to your Windows Chrome, or generate SVG only (SVG-only needs no browser)." },
+          { q: "Does it work on Windows / Linux?", a: "Yes. Generating the SVG is pure stdlib Python and runs anywhere; rendering PNG needs local Chromium, and the browser candidates are probed per platform (Windows looks for chrome.exe and msedge.exe under Program Files / %LOCALAPPDATA% — Edge ships with the OS, so usually nothing extra to install; Linux looks for google-chrome / chromium on PATH). One source of truth: run scripts/make-all.sh on macOS/Linux, scripts\\make-all.ps1 on Windows (or double-click make-all.cmd). Set CHROME=/path/to/chrome to point at a specific browser." },
           { q: "Do I need Pillow / cairosvg?", a: "No. PNG export goes through a headless browser; the scripts use only the standard library: math / argparse / json / subprocess." },
           { q: "How do I change the main color?", a: "Change --color; the gradient and cutout color follow. For full control, pass --theme with {color, light, mid, dark, glyph_color}." },
           { q: "Can I add my own glyph?", a: "Yes. Add a 512×512 SVG block to the GLYPHS dict in scripts/make_icon.py; --glyph with the name works immediately." },

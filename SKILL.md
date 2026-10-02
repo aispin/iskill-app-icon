@@ -10,7 +10,12 @@ agent_created: true
 一条命令，从「一个图形 + 一个颜色」到**能直接用的整套图标**。
 
 ```bash
+# macOS / Linux
 bash scripts/make-all.sh --glyph whale --color '#10C8A1' --outdir public --name "我的应用" --sheet
+
+# Windows（PowerShell）
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\make-all.ps1 --glyph whale --color '#10C8A1' --outdir public --name "我的应用" --sheet
+# 也可以直接双击 scripts\make-all.cmd
 ```
 
 产出：`favicon.svg` · `favicon-16/32/48.png` · `apple-touch-icon.png` · `icon-192/512.png` ·
@@ -55,7 +60,8 @@ bash scripts/make-samples.sh --svg-only   # 只重出 SVG，不需要浏览器
           ├─ render_png.py   本机 Chromium 无头渲染 → 各尺寸 PNG
           │                  （不需要 Pillow / cairosvg / librsvg）
           │
-          └─ make-all.sh     串起来 + 出 manifest + 打印接入片段
+          └─ make_all.py    串起来 + 出 manifest + 打印接入片段
+                             （.sh / .ps1 / .cmd 只是找解释器转参数的薄壳）
 ```
 
 ## 何时用
@@ -81,6 +87,9 @@ python3 $S/scripts/make_icon.py --glyph bolt --color '#7C5CFF' --flat --out bolt
 # ② SVG + 全套 PNG + manifest（推荐）
 bash $S/scripts/make-all.sh --glyph orbit --color '#3B82F6' --outdir public \
      --name "网关控制台" --short "网关" --sheet
+# Windows 同一条命令：
+#   powershell -NoProfile -ExecutionPolicy Bypass -File $S\scripts\make-all.ps1 `
+#     --glyph orbit --color '#3B82F6' --outdir public --name "网关控制台" --sheet
 
 # ③ 只从已有 SVG 派生 PNG
 python3 $S/scripts/render_png.py --svg favicon.svg --outdir public \
@@ -168,12 +177,17 @@ python3 $S/scripts/render_png.py --svg favicon.svg --sheet --sheet-out icon-shee
 
 ## 环境要求
 
-- **Python 3.9+**，**零第三方依赖**（纯标准库：`math` / `argparse` / `json` / `subprocess`）。
+- **Python 3.9+**，**零第三方依赖**（纯标准库：`math` / `argparse` / `json` / `subprocess` / `urllib`）。
   默认用 PATH 里的 `python3`；可用 `ISKILL_PYTHON=/path/to/python3` 覆盖。
-- **Chromium 系浏览器**（只在渲染 PNG 时需要）。自动探测：
-  Chrome / Chromium / Edge / Brave、`~/.agent-browser/browsers/chrome-*`、Playwright 缓存、`google-chrome`。
+- **Chromium 系浏览器**（只在渲染 PNG 时需要）。**三平台自动探测**：
+  - macOS：`/Applications` 下的 Chrome / Chromium / Edge / Brave、`~/.agent-browser/browsers/chrome-*`、Playwright 缓存
+  - Windows：`Program Files` / `Program Files (x86)` / `%LOCALAPPDATA%` 下的 `chrome.exe`、**`msedge.exe`（Edge 随系统预装，通常不用额外装）**、Playwright 缓存
+  - Linux：PATH 里的 `google-chrome` / `chromium` / `chromium-browser` 等
   都找不到就用 `CHROME=/path/to/chrome` 指定。**不需要装 Pillow / cairosvg。**
-- 只生成 SVG 的话，浏览器也不需要。
+- 只生成 SVG 的话，浏览器也不需要（`make_icon.py` 纯标准库）。
+- **平台支持**：macOS / Windows / Linux 均可用 —— 真源是 `scripts/make_all.py`，
+  `make-all.sh`（macOS/Linux）、`make-all.ps1` / `make-all.cmd`（Windows）只是薄壳。
+  `make-samples.sh` 是**维护者脚本**（重出文档样本图），macOS/Linux 直接跑，Windows 用 Git Bash。
 
 ## 踩过的坑（省下你同样的两小时）
 
@@ -185,3 +199,5 @@ python3 $S/scripts/render_png.py --svg favicon.svg --sheet --sheet-out icon-shee
 | 描摹位图得到的形状永远差一点点 | 别描摹。手绘 + 变体比选，两轮就能定 |
 | maskable 露出一圈接缝 | 见上表：用 `--tile rect --inset 0 --scale 0.76` 单独出一份源件 |
 | `pip install` 被沙箱拦、本地端口请求 502 | 本技能**不需要 pip**；渲染用无头浏览器，本地端口记得绕代理（`--noproxy '*'`） |
+| **Windows 上渲染是空白 / 图不显示** | 页面里写的是 `src="C:\a\b.svg"` —— 浏览器把它当 scheme「c:」，根本加载不到（macOS 恰好能糊过去，所以这坑只在 Windows 暴露）。**必须转成合法 `file://` URI**：`"file://" + pathname2url(abspath)`，已在 `render_png.py` 的 `file_uri()` 里做好 |
+| 无头渲染：**没有截图文件**，或进程**跑完不退出**（挂住） | 没有万能配方，看 Chrome 版本 + 是否受沙箱限制。本机实测（Chrome 154 for Testing / macOS）：裸 `--headless --disable-gpu`、**不传 profile** → 稳出一张图（只有无害的 CVDisplayLink 警告）；传 `--user-data-dir=<临时目录>` → Chrome 截完**不退出**，挂死（同命令单跑 >7min 只能 kill）；优先 `--headless=new` → GPU 进程直接 FATAL（`gpu_data_manager_impl_private.cc:417 GPU process isn't usable`，exit 6）。反过来在**受限沙箱**里 Chrome 又会因建不了默认 profile 而 SIGTRAP，那种环境才需要显式 `--user-data-dir`。`shoot()` 的策略 = 先裸 `--headless`，失败再退 `--headless=new`，**默认不带 profile** |

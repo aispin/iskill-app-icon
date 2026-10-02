@@ -181,6 +181,9 @@ VARIANTS = {
 ### 无头浏览器出图
 
 ```bash
+# macOS 的浏览器路径长这样；Windows 是
+#   "%ProgramFiles%\Google\Chrome\Application\chrome.exe"（或预装的 msedge.exe），
+# Linux 通常直接 `google-chrome` / `chromium`。脚本里已按平台自动探测，一般不用手填。
 CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 "$CHROME" --headless --disable-gpu --no-proxy-server --hide-scrollbars \
   --force-device-scale-factor=1 --virtual-time-budget=2500 \
@@ -191,6 +194,10 @@ CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 - **视口**：`--window-size=W,H` 就是截图尺寸，别指望它保持 —— 换尺寸要重新设
 - **代理**：本地/文件 URL 一定加 `--no-proxy-server`，否则 `HTTP_PROXY` 环境变量会让你拿到 502
 - **慢渲染**：`--virtual-time-budget=2500` 给外部资源一点时间
+- **别加 `--user-data-dir`**：看着更「健壮」，实测反而让 Chrome 截完**不退出**、挂死（>7min 只能 kill）
+- **别优先 `--headless=new`**：部分 Chrome（如 154 for Testing）上 GPU 进程直接 FATAL（exit 6）。
+  正解是**先裸 `--headless`**，失败再退 `--headless=new`（`render_png.py::shoot()` 就是这么写的）
+- **图源必须转 `file://` URI**：`<img src="C:\a\b.png">` 里的 `C:` 会被当 scheme，Windows 上直接不显示
 
 ### 像素级校验（可选，但很有用）
 
