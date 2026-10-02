@@ -31,16 +31,19 @@ window.PROMO = {
         meta2: "6 种内置图形",
         meta3: "只出 SVG 不需要浏览器"
       },
-      terminal: {
-        title: "zsh — iskill-app-icon",
-        lines: [
-          [{ t: "$ ", c: "p" }, { t: "python3 scripts/make_icon.py --glyph leaf --color '#10C8A1' --out favicon.svg", c: "k" }],
-          [{ t: "✓ ", c: "p" }, { t: "已写出 favicon.svg（手绘矢量，约 3–4 KB）", c: "s" }],
-          [{ t: "$ ", c: "p" }, { t: "bash scripts/make-all.sh --glyph orbit --color '#3B82F6' --outdir public --name \"网关控制台\" --sheet", c: "k" }],
-          [{ t: "✓ ", c: "p" }, { t: "favicon.svg · favicon-16/32/48.png · apple-touch-icon.png · icon-192/512.png · maskable-512.png · site.webmanifest", c: "s" }],
-          [{ t: "→ ", c: "p" }, { t: "已打印要贴进 <head> 的接入片段", c: "" }]
+      chat: {
+        title: "AI Agent · 对话现场",
+        status: "在线",
+        userLabel: "你",
+        agentLabel: "AI",
+        messages: [
+          { role: "user", text: "帮我给这个项目做一套图标，主色 #10C8A1" },
+          { role: "agent", text: "先出一个 SVG 让你确认图形，通过后再渲染全套 PNG（含 favicon.ico 与 maskable），并把 theme-color 写进 site.webmanifest。", tag: "已读 references/设计规则" },
+          { role: "user", text: "16px 还认得出吗？" },
+          { role: "agent", text: "出一张多尺寸预览图给你自己看——小尺寸只留轮廓，细节一律删。不满意换个图形，同参数永远同图。" }
         ]
       },
+
 
       stats: [
         { value: "6", label: "内置手绘图形", note: "白鲸 / 猫 / 叶片 / 闪电 / 轨道环 / 六边形，另有字母 S" },
@@ -131,16 +134,19 @@ window.PROMO = {
         meta2: "6 built-in glyphs",
         meta3: "SVG-only needs no browser"
       },
-      terminal: {
-        title: "zsh — iskill-app-icon",
-        lines: [
-          [{ t: "$ ", c: "p" }, { t: "python3 scripts/make_icon.py --glyph leaf --color '#10C8A1' --out favicon.svg", c: "k" }],
-          [{ t: "✓ ", c: "p" }, { t: "wrote favicon.svg (hand-drawn vector, ~3–4 KB)", c: "s" }],
-          [{ t: "$ ", c: "p" }, { t: "bash scripts/make-all.sh --glyph orbit --color '#3B82F6' --outdir public --name \"Gateway\" --sheet", c: "k" }],
-          [{ t: "✓ ", c: "p" }, { t: "favicon.svg · favicon-16/32/48.png · apple-touch-icon.png · icon-192/512.png · maskable-512.png · site.webmanifest", c: "s" }],
-          [{ t: "→ ", c: "p" }, { t: "printed the <head> snippet to paste", c: "" }]
+      chat: {
+        title: "AI Agent · live session",
+        status: "online",
+        userLabel: "You",
+        agentLabel: "AI",
+        messages: [
+          { role: "user", text: "Make an icon set for this project, brand color #10C8A1" },
+          { role: "agent", text: "One SVG first so you can approve the glyph, then the full PNG set (favicon.ico and maskable) with theme-color written into site.webmanifest.", tag: "read references/design-rules" },
+          { role: "user", text: "Will it still read at 16px?" },
+          { role: "agent", text: "I'll render a multi-size sheet so you can judge. At small sizes only the silhouette survives — detail gets dropped. Don't like it? Pick another glyph; same params, same result." }
         ]
       },
+
 
       stats: [
         { value: "6", label: "built-in hand-drawn glyphs", note: "whale / cat / leaf / bolt / orbit / hex, plus a letter S" },
