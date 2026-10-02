@@ -84,13 +84,14 @@ window.PROMO = {
       steps: {
         eyebrow: "上手",
         title: "三步跑起来",
-        sub: "",
+        sub: "命令由 agent 跑，你只说要什么、看结果。",
         items: [
           { title: "交给 AI 装", desc: "把这句话粘进对话框，agent 会自己拉代码、读文档，再告诉你用法。", codeKey: "install" },
-          { title: "先出一个 SVG", desc: "只出矢量最常用，任何平台都能跑（不需要浏览器）。", codeName: "bash", code: "python3 scripts/make_icon.py --glyph leaf --color '#10C8A1' --out favicon.svg" },
-          { title: "出全套 PNG + manifest", desc: "一条命令串起全部产物；这一步需要本机 Chromium 渲染。", codeName: "bash", code: "bash scripts/make-all.sh --glyph orbit --color '#3B82F6' --outdir public --name \"网关控制台\" --sheet" }
+          { title: "说清要什么图标", desc: "图形、主色、要不要全套，一句话说完；命令与参数由 agent 决定。", codeName: "prompt", code: "帮我给这个项目做一套图标，主色 #10C8A1，先出一个 SVG 我确认图形，再出全套 PNG 和 manifest。" },
+          { title: "看预览图定稿", desc: "它会出一张多尺寸预览图，你只要确认 16px 还认得出；不满意换个图形重来，同参数永远同图。" }
         ]
       },
+
 
       faq: {
         eyebrow: "问答",
@@ -183,13 +184,14 @@ window.PROMO = {
       steps: {
         eyebrow: "Get started",
         title: "Up and running in three steps",
-        sub: "",
+        sub: "The agent runs the commands. You say what you want and check the result.",
         items: [
           { title: "Let your agent install it", desc: "Paste the line into the chat — it clones the repo, reads the docs, and tells you how to use it.", codeKey: "install" },
-          { title: "Emit an SVG first", desc: "Vector-only is the common case and runs on any platform (no browser).", codeName: "bash", code: "python3 scripts/make_icon.py --glyph leaf --color '#10C8A1' --out favicon.svg" },
-          { title: "Emit the full PNG set", desc: "One command chains every artifact; this step needs local Chromium.", codeName: "bash", code: "bash scripts/make-all.sh --glyph orbit --color '#3B82F6' --outdir public --name \"Gateway\" --sheet" }
+          { title: "Say what icon you need", desc: "Glyph, brand color, full set or not — one sentence is enough. The agent picks the commands.", codeName: "prompt", code: "Make an icon set for this project, brand color #10C8A1. Show me one SVG first, then the full PNG set and manifest." },
+          { title: "Check the preview sheet", desc: "It renders a multi-size sheet; just confirm 16 px is still readable. Don't like it? Pick another glyph — same params, same result." }
         ]
       },
+
 
       faq: {
         eyebrow: "FAQ",
