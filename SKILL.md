@@ -1,7 +1,7 @@
 ---
 name: iskill-app-icon
 summary: 零依赖图标生成器——超椭圆底板 + 手绘矢量图形，一条命令产出 favicon / apple-touch-icon / PWA 全套图标（SVG + 多尺寸 PNG + manifest），并给出接入代码。
-description: 当用户要给网站/应用/小程序/PWA「做个图标」「生成 favicon」「换图标底色」「app icon」，或需要 favicon.ico / apple-touch-icon / icon-192/512 / maskable / theme-color / site.webmanifest 时使用。触发词：生成图标、做个图标、app icon、favicon、网站图标、应用图标、PWA 图标、图标配色、换图标颜色、icon。内置白鲸/猫/叶片/闪电/轨道环/六边形六种图形，四种底板（squircle/circle/square/rect），任意主色自动推导渐变与镂空色；纯标准库生成 SVG，再用本机 Chromium 无头渲染出全部 PNG 尺寸，不需要任何图形库。
+description: 当用户要给网站/应用/小程序/PWA「做个图标」「生成 favicon」「换图标底色」「app icon」，或需要 favicon.ico / apple-touch-icon / icon-192/512 / maskable / theme-color / site.webmanifest 时使用；也适用于「生成一整套 SVG 图标/资产」——avatar 收集品、成就徽章、图标族、sprite 精灵表（见 reference/svg-asset-sets.md）。触发词：生成图标、做个图标、app icon、favicon、网站图标、应用图标、PWA 图标、图标配色、换图标颜色、icon、图标集、资产套件、avatar、徽章、收集品、symbol sprite。内置白鲸/猫/叶片/闪电/轨道环/六边形六种图形，四种底板（squircle/circle/square/rect），任意主色自动推导渐变与镂空色；纯标准库生成 SVG，再用本机 Chromium 无头渲染出全部 PNG 尺寸，不需要任何图形库。
 agent_created: true
 ---
 
@@ -70,6 +70,31 @@ bash scripts/make-samples.sh --svg-only   # 只重出 SVG，不需要浏览器
 - 已有图标但想换主色（本技能一条命令换掉，渐变和镂空色会跟着重算）。
 - 需要 `apple-touch-icon`、`maskable` 这类**有具体平台规范**的派生件。
 - 需要一个「看起来很专业」的占位图标 —— 比随手截个图强得多。
+## 进阶：整套 SVG 资产（avatar / 徽章 / 收集品 / 图标族）
+
+上面解决「一枚图标」；要一次产出一**套**风格统一的 SVG 资产（收集品 avatar、成就徽章、
+图鉴陈列、图标族），走 `reference/svg-asset-sets.md` 的套件规范：
+
+- 动工前定四件事：尺寸档（24 icon / 96 avatar）、色板、`<类型>-<编号>-<slug>` 命名、每枚一句话人设
+- LLM 批量生成工作流：风格锚点前置 → 分批落盘（每 3~4 枚回读）→ 逐枚校验 → 变体比选
+- 双主题 / 剪影态 / 稀有度分型的做法与验收清单
+
+源文件备好后，用零依赖脚本提取成页面内嵌的 symbol 精灵表（校验 + sprite + JSON 清单一步到位）：
+
+```bash
+# 校验 16 枚资产：viewBox / 标签配平 / 无外部引用 / id 无重复
+node $S/scripts/svg-symbol-extract.mjs docs/assets/avatars --check
+
+# 校验 + 产出 sprite 片段（粘进 <body> 后 <use href="#id"> 引用）
+node $S/scripts/svg-symbol-extract.mjs docs/assets/avatars --prefix av-
+
+# 再出一份 JSON 资产清单（编号/文件/viewBox，喂给配置表或「App 覆盖默认资产」机制）
+node $S/scripts/svg-symbol-extract.mjs docs/assets/avatars --out sprite.html --manifest manifest.json
+```
+
+实战出处：AI-Matrix 成长计划 16 枚数字资产（avatar ×9 + 徽章 ×7），方法论与踩坑见
+**`reference/svg-asset-sets.md`**。
+
 
 ## 快速上手
 
