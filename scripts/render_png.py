@@ -124,6 +124,24 @@ def shoot(chrome: str, page: str, out: str, w: int, h: int, transparent: bool) -
         if os.path.exists(out) and os.path.getsize(out) > 0:
             return
         last = r
+
+    # 兜底（受限沙箱环境）：Chrome 自身 sandbox 初始化失败
+    # （"sandbox initialization failed: Operation not permitted"）时，
+    # 加 --no-sandbox 重试。**不要加 --user-data-dir**——它会挂住不退出
+    # （2026-10-03 实测：--no-sandbox 裸跑即出图并正常退出）。
+    for flag in ("--headless", "--headless=new"):
+        if os.path.exists(out):
+            try:
+                os.remove(out)
+            except OSError:
+                pass
+        r = subprocess.run(
+            [base[0], flag, "--no-sandbox"] + base[1:],
+            capture_output=True, text=True, timeout=60,
+        )
+        if os.path.exists(out) and os.path.getsize(out) > 0:
+            return
+        last = r
     raise SystemExit("截图失败（%dx%d）：\n%s\n%s"
                      % (w, h, last.stdout[-800:], last.stderr[-800:]))
 

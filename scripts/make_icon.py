@@ -198,6 +198,14 @@ GLYPHS = {
     <circle cx="384" cy="284" r="14" fill="{C}"/>
     <path d="M344 322C368 342 398 340 416 322" fill="none" stroke="{C}" stroke-width="12" stroke-linecap="round"/>""",
     },
+    "bosscat": {
+      "desc": "波斯王座猫（戴三尖皇冠的胖猫：冠+胖脸+尖耳+镂空眼鼻）",
+      "cutout_at": [
+        256,
+        340
+      ],
+      "svg": "\n  <path fill=\"{G}\" d=\"M150 176 L150 126 L208 156 L256 92 L304 156 L362 126 L362 176 Z\"/>\n  <rect fill=\"{G}\" x=\"146\" y=\"170\" width=\"220\" height=\"26\" rx=\"10\"/>\n  <path fill=\"{G}\" d=\"M148 232 L134 164 L200 194 Z\"/>\n  <path fill=\"{G}\" d=\"M364 232 L378 164 L312 194 Z\"/>\n  <path fill=\"{G}\" d=\"M120 306 C120 232 180 194 256 194 C332 194 392 232 392 306 C392 372 338 416 256 416 C174 416 120 372 120 306 Z\"/>\n  <circle fill=\"{C}\" cx=\"208\" cy=\"298\" r=\"19\"/>\n  <circle fill=\"{C}\" cx=\"304\" cy=\"298\" r=\"19\"/>\n  <path fill=\"{C}\" d=\"M256 328 L272 340 L256 352 L240 340 Z\"/>\n  <path fill=\"none\" stroke=\"{C}\" stroke-width=\"14\" stroke-linecap=\"round\" d=\"M256 352 C256 366 244 372 232 370 M256 352 C256 366 268 372 280 370\"/>\n"
+    },
     "cat": {
         "desc": "猫头（两只尖耳 + 眼睛 + 鼻子）",
         "cutout_at": (256, 300),
@@ -206,6 +214,24 @@ GLYPHS = {
     <ellipse cx="214" cy="284" rx="15" ry="20" fill="{C}"/>
     <ellipse cx="298" cy="284" rx="15" ry="20" fill="{C}"/>
     <path d="M256 306L272 324L256 336L240 324Z" fill="{C}"/>""",
+    },
+    "feather": {
+        "desc": "羽毛（斜置羽片 + 羽轴 + 羽枝 + 羽柄）",
+        "cutout_at": (247, 243),
+        "svg": """
+    <g transform="rotate(-32 256 256)">
+      <path fill="{G}" d="M256 92C338 128 362 232 300 318C284 340 268 352 256 356C232 348 200 310 184 254C168 196 204 122 256 92Z"/>
+      <path d="M256 108L256 344" fill="none" stroke="{C}" stroke-width="20" stroke-linecap="round"/>
+      <g fill="none" stroke="{C}" stroke-width="15" stroke-linecap="round">
+        <path d="M256 180L314 152"/>
+        <path d="M256 240L320 212"/>
+        <path d="M256 298L314 272"/>
+        <path d="M256 180L198 152"/>
+        <path d="M256 240L192 214"/>
+        <path d="M256 298L198 274"/>
+      </g>
+      <path d="M256 350C250 378 246 396 240 412" fill="none" stroke="{G}" stroke-width="24" stroke-linecap="round"/>
+    </g>""",
     },
     "leaf": {
         "desc": "叶片（尖端朝上，带主脉与侧脉）",
