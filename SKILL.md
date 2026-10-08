@@ -18,8 +18,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\make-all.ps1 --glyph
 # 也可以直接双击 scripts\make-all.cmd
 ```
 
-产出：`favicon.svg` · `favicon-16/32/48.png` · `apple-touch-icon.png` · `icon-192/512.png` ·
-`maskable-512.png` · `site.webmanifest` ·（`--sheet` 时）多尺寸预览图，最后打印要贴进 `<head>` 的片段。
+产出：`favicon.svg` · `favicon.ico`（内嵌 16/32/48，老浏览器兼容）· `favicon-32/48.png` ·
+`apple-touch-icon.png` · `icon-192/512.png` · `maskable-512.png` · `site.webmanifest` ·
+（`--sheet` 时）多尺寸预览图，最后打印要贴进 `<head>` 的片段。
 
 ## 样本
 
@@ -191,7 +192,8 @@ python3 $S/scripts/render_png.py --svg favicon.svg --sheet --sheet-out icon-shee
 
 | 产物 | 尺寸 | 底色 | 用途 |
 |---|---|---|---|
-| `favicon-16/32/48.png` | 16/32/48 | **透明** | 浏览器标签页 |
+| `favicon.ico` | 内嵌 16/32/48 三档 | **透明** | 老浏览器兜底（不认 `<link>` 时按约定路径 `/favicon.ico` 自动请求） |
+| `favicon-32/48.png` | 32/48 | **透明** | 现代浏览器 `<link>` 显式指定 |
 | `favicon.svg` | 矢量 | 透明（含自带圆角底板） | 现代浏览器首选，缩放不糊 |
 | `apple-touch-icon.png` | 180 | **不透明**（iOS 自己加遮罩，透明会被填黑） | iOS 添加到主屏 |
 | `icon-192/512.png` | 192/512 | **透明** | PWA manifest `purpose: "any"` |

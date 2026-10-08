@@ -50,12 +50,12 @@ python3 scripts/make_icon.py --glyph whale --color '#10C8A1' --tile rect --inset
 ### `<head>` 里的 link 怎么写
 
 ```html
+<link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 ```
 
-- 主用 **SVG**，PNG 作同族回落 —— 两者都写 `rel="icon"`。
+- 主用 **SVG**，`favicon.ico`（内嵌 16/32/48）作老浏览器兜底 —— 两者都写 `rel="icon"`。
 - **别写 `rel="alternate icon"`**：`alternate` 的语义是"同一资源的备用表示"，不是标准的 favicon 声明，
   语义模糊、个别浏览器会忽略。直接写 `rel="icon"`。
 - `apple-touch-icon` 必须**不透明**（iOS 加圆角遮罩，透明会被填黑）。

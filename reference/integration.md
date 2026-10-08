@@ -6,22 +6,24 @@
 
 ## 一、最简（只要 favicon）
 
-把 `favicon.svg` 放到站点根目录，`<head>` 里加一行：
+把 `favicon.svg` 和 `favicon.ico` 放到站点根目录，`<head>` 里加：
 
 ```html
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" href="/favicon.ico" sizes="48x48" />
 ```
 
-现代浏览器全部支持 SVG favicon，**缩放不糊**，而且体积只有 PNG 的几分之一。
-老浏览器（IE）会忽略它，无伤大雅。
+现代浏览器选 SVG，**缩放不糊**，体积只有 PNG 的几分之一；
+不支持 SVG favicon 的老浏览器退到 `favicon.ico`（内嵌 16/32/48 三档）。
+就算什么都不写，老浏览器也会按约定路径自动请求 `/favicon.ico` —— 所以这个文件必须在根目录。
 
 ---
 
 ## 二、推荐（全套）
 
 ```html
+<link rel="icon" href="/favicon.ico" sizes="48x48" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="alternate icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 <link rel="manifest" href="/site.webmanifest" />
 <meta name="theme-color" content="#10C8A1" />
@@ -30,7 +32,7 @@
 
 要点：
 
-- `rel="alternate icon"` 是给**不支持 SVG favicon 的浏览器**的兜底。
+- `favicon.ico` 是给**不支持 SVG favicon 的浏览器**的兜底，内嵌 16/32/48 三档。
 - `theme-color` 让移动端地址栏跟着变色 —— 用你图标的主色，整体感立刻上来。
 - `apple-touch-icon` **必须是不透明 PNG**（iOS 会盖自己的圆角遮罩，透明区会被填黑）。
 
@@ -80,6 +82,7 @@ python3 scripts/make_icon.py --glyph whale --color '#10C8A1' \
 
 ```
 public/
+├── favicon.ico
 ├── favicon.svg
 ├── favicon-32.png
 ├── apple-touch-icon.png
@@ -92,6 +95,7 @@ public/
 `index.html` 里写：
 
 ```html
+<link rel="icon" href="/favicon.ico" sizes="48x48" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 ```
 

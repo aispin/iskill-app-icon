@@ -6,7 +6,8 @@
 做四件事：
   1) 生成矢量主件            <outdir>/favicon.svg
   2) 生成 maskable 专用源件  <outdir>/.maskable.svg（满幅底 + 内容 76%，不留接缝）
-  3) 派生各尺寸 PNG          favicon-16/32/48 · apple-touch-icon · icon-192/512 · maskable-512
+  3) 派生各尺寸 PNG          favicon-32/48 · apple-touch-icon · icon-192/512 · maskable-512
+                             + favicon.ico（内嵌 16/32/48，老浏览器兼容）
   4) 生成 site.webmanifest   并打印要贴进 <head> 的片段
 
 为什么是 .py 而不是 .sh：
@@ -85,8 +86,8 @@ def main(argv=None) -> int:
     print("""
 ▸ 4/4  贴进 <head>：
 
+<link rel="icon" href="/favicon.ico" sizes="48x48" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 <link rel="manifest" href="/site.webmanifest" />
 <meta name="theme-color" content="%s" />

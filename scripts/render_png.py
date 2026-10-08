@@ -5,7 +5,8 @@
 跨平台：macOS / Windows / Linux 一份代码（浏览器路径按平台探测，见 browser_candidates()）。
 
 产出（默认全部）：
-    favicon-16.png / favicon-32.png / favicon-48.png   透明底，给浏览器标签页
+    favicon.ico                                        内嵌 16/32/48 三档（PNG 压缩项，老浏览器兼容）
+    favicon-32.png / favicon-48.png                    透明底，给浏览器标签页（16px 只进 ico，不单独出文件）
     apple-touch-icon.png (180)                        不透明底（iOS 会盖自己的圆角遮罩）
     icon-192.png / icon-512.png                        透明底，给 PWA manifest
     maskable-512.png                                   满幅底 + 内容缩到 80%（Android 自适应图标）
@@ -22,6 +23,7 @@ import glob
 import html
 import os
 import shutil
+import struct
 import subprocess
 import sys
 import tempfile
@@ -192,6 +194,30 @@ color:#334155;padding:26px;display:flex;align-items:flex-end;gap:26px}
 </body></html>
 """
 
+def write_ico(entries, out_path: str) -> None:
+    """把若干 PNG 打包成 favicon.ico（零依赖）。
+
+    ICO 自 Vista 起支持「PNG 压缩项」——直接把 PNG 文件原样嵌进容器即可，
+    不需要 Pillow 也不需要转 BMP。entries: [(size, png_path), ...]。
+    """
+    blobs = []
+    for size, p in entries:
+        with open(p, "rb") as f:
+            blobs.append((size, f.read()))
+    header = struct.pack("<HHH", 0, 1, len(blobs))          # reserved=0, type=1(ico), count
+    offset = 6 + 16 * len(blobs)
+    dirs = b""
+    data = b""
+    for size, blob in blobs:
+        # width/height 字节：256 写 0，这里最大 48 不涉及
+        dirs += struct.pack("<BBBBHHII", size % 256, size % 256, 0, 0, 1, 32,
+                            len(blob), offset)
+        data += blob
+        offset += len(blob)
+    with open(out_path, "wb") as f:
+        f.write(header + dirs + data)
+
+
 MANIFEST_TPL = """{
   "name": "%(name)s",
   "short_name": "%(short)s",
@@ -215,8 +241,8 @@ def main(argv=None):
     ap.add_argument("--outdir", default=".", help="PNG 输出目录")
     ap.add_argument("--color", default="#10C8A1",
                     help="不透明派生件（apple-touch / maskable）的底色")
-    ap.add_argument("--sizes", default="16,32,48,180,192,512",
-                    help="要生成的 favicon/通用 PNG 尺寸，逗号分隔")
+    ap.add_argument("--sizes", default="32,48,192,512",
+                    help="要生成的 favicon/通用 PNG 尺寸，逗号分隔（16 只进 ico）")
     ap.add_argument("--prefix", default="favicon", help="小尺寸文件名前缀")
     ap.add_argument("--name", default="My App", help="生成 manifest 时的应用名")
     ap.add_argument("--short", default=None, help="manifest short_name")
@@ -229,6 +255,7 @@ def main(argv=None):
                          "不给则退回「缩放 80%% + 纯色底」，底板圆角会露接缝。")
     ap.add_argument("--no-touch", action="store_true", help="跳过 apple-touch-icon")
     ap.add_argument("--no-maskable", action="store_true", help="跳过 maskable")
+    ap.add_argument("--no-ico", action="store_true", help="跳过 favicon.ico")
     ap.add_argument("-q", "--quiet", action="store_true")
     args = ap.parse_args(argv)
 
@@ -286,6 +313,21 @@ def main(argv=None):
                                   page_for(svg, 512, args.color, scale=0.80))
             out = os.path.join(outdir, "maskable-512.png")
             shoot(chrome, page, out, 512, 512, transparent=False)
+            made.append(out)
+
+        if not args.no_ico:
+            # favicon.ico：内嵌 16/32/48 三档。16 不在默认 --sizes 里（单独文件收益不大），
+            # 这里渲染进临时目录，只进 ico。
+            ico_entries = []
+            for s in (16, 32, 48):
+                p = os.path.join(outdir, "%s-%d.png" % (args.prefix, s))
+                if not os.path.isfile(p):
+                    p = os.path.join(tmp, "ico-%d.png" % s)
+                    page = write_page(tmp, "ico%d.html" % s, page_for(svg, s, None))
+                    shoot(chrome, page, p, s, s, transparent=True)
+                ico_entries.append((s, p))
+            out = os.path.join(outdir, "favicon.ico")
+            write_ico(ico_entries, out)
             made.append(out)
 
     if args.manifest:

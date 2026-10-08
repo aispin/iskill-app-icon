@@ -47,7 +47,7 @@ window.PROMO = {
 
       stats: [
         { value: "6", label: "内置手绘图形", note: "白鲸 / 猫 / 叶片 / 闪电 / 轨道环 / 六边形，另有字母 S" },
-        { value: "9", label: "一条命令的产物件数", note: "favicon.svg + 3 档 PNG + apple-touch-icon + 192/512 + maskable + manifest" },
+        { value: "9", label: "一条命令的产物件数", note: "favicon.svg + favicon.ico（内嵌 16/32/48）+ 32/48 PNG + apple-touch-icon + 192/512 + maskable + manifest" },
         { value: "29 → 3.9 KB", label: "单图体积（描摹 → 手绘）", note: "手写 5~10 条贝塞尔，不描摹位图" },
         { value: "0", label: "第三方依赖", note: "纯标准库，不需要 Pillow / cairosvg" }
       ],
@@ -150,7 +150,7 @@ window.PROMO = {
 
       stats: [
         { value: "6", label: "built-in hand-drawn glyphs", note: "whale / cat / leaf / bolt / orbit / hex, plus a letter S" },
-        { value: "9", label: "artifacts from one command", note: "favicon.svg + 3 PNG sizes + apple-touch-icon + 192/512 + maskable + manifest" },
+        { value: "9", label: "artifacts from one command", note: "favicon.svg + favicon.ico (16/32/48 embedded) + 32/48 PNG + apple-touch-icon + 192/512 + maskable + manifest" },
         { value: "29 → 3.9 KB", label: "per-icon size (trace → hand-draw)", note: "5~10 béziers instead of tracing a bitmap" },
         { value: "0", label: "third-party dependencies", note: "stdlib only, no Pillow / cairosvg" }
       ],
