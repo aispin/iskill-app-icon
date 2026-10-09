@@ -229,3 +229,15 @@ python3 $S/scripts/render_png.py --svg favicon.svg --sheet --sheet-out icon-shee
 | **Windows 上渲染是空白 / 图不显示** | 页面里写的是 `src="C:\a\b.svg"` —— 浏览器把它当 scheme「c:」，根本加载不到（macOS 恰好能糊过去，所以这坑只在 Windows 暴露）。**必须转成合法 `file://` URI**：`"file://" + pathname2url(abspath)`，已在 `render_png.py` 的 `file_uri()` 里做好 |
 | 无头渲染：**没有截图文件**，或进程**跑完不退出**（挂住） | 没有万能配方，看 Chrome 版本 + 是否受沙箱限制。本机实测（Chrome 154 for Testing / macOS）：裸 `--headless --disable-gpu`、**不传 profile** → 稳出一张图（只有无害的 CVDisplayLink 警告）；传 `--user-data-dir=<临时目录>` → Chrome 截完**不退出**，挂死（同命令单跑 >7min 只能 kill）；优先 `--headless=new` → GPU 进程直接 FATAL（`gpu_data_manager_impl_private.cc:417 GPU process isn't usable`，exit 6）。反过来在**受限沙箱**里 Chrome 又会因建不了默认 profile 而 SIGTRAP，那种环境才需要显式 `--user-data-dir`。`shoot()` 的策略 = 先裸 `--headless`，失败再退 `--headless=new`，**默认不带 profile** |
 | 受限沙箱里报 `sandbox initialization failed: Operation not permitted` + GPU FATAL（exit 6） | 沙箱禁了 Chrome 自身 sandbox。对策：`shoot()` 已内置**第三重兜底**——加 `--no-sandbox` 重试（裸跑即出图并正常退出）。**千万别加 `--user-data-dir`** 想绕（实测挂死不退出）。另注意 `CHROME` env 要指向真实二进制——macOS 上 `/Applications/Google Chrome.app` 可能是沙箱里解析失败的链接（`ls` 看得见、`os.path.isfile` 为 False），用 `mdfind "kMDItemCFBundleIdentifier == 'com.google.Chrome'"` 找真实路径 |
+
+## 依赖同步
+
+本仓库 `promo-page/assets/{app.js,style.css,icons.js}` 是 [iskill-promo-page](https://github.com/aispin/iskill-promo-page)
+模板引擎的 vendored 副本（锁定版本见 `package.json` 的 `iskillDeps`），**不要手改**——
+去真源仓库改并升 `@iskill-version`，再用 iskill-dep-sync 同步回来（本机无该工具时按下面自举）：
+
+```bash
+T="$HOME/.workbuddy/skills/iskill-dep-sync/scripts/skill-deps.mjs"
+[ -f "$T" ] || { TMP="$(mktemp -d)"; curl -fsSL "https://raw.githubusercontent.com/aispin/iskill-dep-sync/HEAD/scripts/skill-deps.mjs" -o "$TMP/skill-deps.mjs"; T="$TMP/skill-deps.mjs"; }
+node "$T" check "$(pwd)"     # 漂移检测；node "$T" sync "$(pwd)" 恢复/升级；node "$T" env "$(pwd)" 冷启动自检
+```
